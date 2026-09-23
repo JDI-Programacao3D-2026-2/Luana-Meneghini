@@ -667,6 +667,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1536613614}
+  - {fileID: 1825085419}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!195 &538996121
@@ -1782,6 +1783,7 @@ GameObject:
   - component: {fileID: 1825085418}
   - component: {fileID: 1825085417}
   - component: {fileID: 1825085416}
+  - component: {fileID: 1825085420}
   m_Layer: 0
   m_Name: gun
   m_TagString: Untagged
@@ -1875,15 +1877,31 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1825085415}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.891, y: 1.0539, z: 1.017}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.53744996, y: -0.04610002, z: 0.66345}
   m_LocalScale: {x: 0.22069515, y: 0.2093201, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 983452662}
   - {fileID: 813444344}
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 538996120}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1825085420
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1825085415}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5759e8c71f5776b4184b23520557faba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ShootPool
+  projectilePrefab: {fileID: 3388242000576513305, guid: ae602ac02e053f943804b25ac3dfc2b6, type: 3}
+  firePoint: {fileID: 813444344}
+  poolSize: 20
+  currentAmo: 0
 --- !u!1 &2049348707
 GameObject:
   m_ObjectHideFlags: 0
@@ -2124,4 +2142,3 @@ SceneRoots:
   - {fileID: 34950734}
   - {fileID: 1453347398}
   - {fileID: 831656846}
-  - {fileID: 1825085419}

@@ -19,7 +19,15 @@ public class ShootPool : MonoBehaviour
 
     void Update()
     {
-        if (Mouse.current.leftButton.wasPressedThisFrame) { Shoot(); }
+        if (Mouse.current.leftButton.wasPressedThisFrame) 
+        { 
+            Shoot(); 
+        }
+
+        if (Keyboard.current[Key.R].isPressed)
+        {
+            currentAmo = poolSize;
+        }
     }
 
     void Shoot()
@@ -39,6 +47,4 @@ public class ShootPool : MonoBehaviour
         activeProjectiles--;
         pool.Release(projectile);
     }
-
-
 }
