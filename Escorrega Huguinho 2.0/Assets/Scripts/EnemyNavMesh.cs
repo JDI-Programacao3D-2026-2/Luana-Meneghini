@@ -6,6 +6,7 @@ public class EnemyNavMesh : MonoBehaviour
     public Transform player;
     public NavMeshAgent agent;
     public Transform[] waypoints;
+<<<<<<< HEAD
 
     public LayerMask layerMask;
     public enum EnemyState
@@ -13,10 +14,43 @@ public class EnemyNavMesh : MonoBehaviour
         WayPatrol, RandomPatrol, Pursuit
     }
     public EnemyState currentState = EnemyState.Pursuit;
+=======
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
+        
+    }
+>>>>>>> 31190f289988be061d9d3f5c9b5c702becf35f0a
 
     void Update()
     {
+<<<<<<< HEAD
         FiniteStateMachine();
+=======
+        // Pursuit();
+        WayPatrol();
+        // RandomPatrol();
+    }
+
+    void Pursuit()
+    {
+        if (player != null) 
+        {
+            agent.stoppingDistance = 6f;
+            agent.SetDestination(player.position);
+            transform.LookAt(player);
+        }
+    }
+
+    void WayPatrol()
+    {
+        agent.stoppingDistance = 0f;
+        if (waypoints.Length != 0 && !agent.pathPending && agent.remaningDistance < 0.5f)
+        {
+            int randomIndex = Random.Range(0, waypoints.Length);
+            agent.SetDestination(waypoints[randomIndex].position);
+        }
+>>>>>>> 31190f289988be061d9d3f5c9b5c702becf35f0a
     }
     public void ChangeState(EnemyState newState)
     {
@@ -83,3 +117,4 @@ public class EnemyNavMesh : MonoBehaviour
          }
      } */
 }
+
