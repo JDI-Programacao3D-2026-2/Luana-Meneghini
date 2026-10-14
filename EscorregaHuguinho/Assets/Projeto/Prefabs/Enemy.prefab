@@ -217,6 +217,7 @@ GameObject:
   - component: {fileID: 5528471880476074483}
   - component: {fileID: 8852863119727357887}
   - component: {fileID: 6639222081620569984}
+  - component: {fileID: -5419582117232737573}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -391,6 +392,19 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   player: {fileID: 0}
+--- !u!114 &-5419582117232737573
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4187289786563658073}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 391e05d4f6d58dd4bad60969299fe7a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
+  maxHealth: 100
 --- !u!1 &4326801235516134311
 GameObject:
   m_ObjectHideFlags: 0
