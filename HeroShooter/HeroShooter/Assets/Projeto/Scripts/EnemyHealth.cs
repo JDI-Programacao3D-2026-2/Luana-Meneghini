@@ -4,6 +4,8 @@ public class EnemyHealth : MonoBehaviour
 {
     public float maxHealth = 100f;
     private float currentHealth;
+    public CharacterStats PlayerStats;
+    public CharacterStats myStats;
 
     void Start(){
         currentHealth = maxHealth;
@@ -15,8 +17,9 @@ public class EnemyHealth : MonoBehaviour
         }
     }
     void Die(){
+        PlayerStats.AddKill();
+        myStats.AddDeath();
         gameObject.SetActive(false);
-        
     }
 }
 
