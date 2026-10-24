@@ -4031,7 +4031,7 @@ PrefabInstance:
       objectReference: {fileID: 429519145}
     - target: {fileID: 3899641837907963718, guid: 2c63afc5268e046938e4f2b9c6b87de0, type: 3}
       propertyPath: characterName
-      value: Gab
+      value: Yoshi
       objectReference: {fileID: 0}
     - target: {fileID: 4187289786563658073, guid: 2c63afc5268e046938e4f2b9c6b87de0, type: 3}
       propertyPath: m_Name
