@@ -35,7 +35,7 @@ public class ShootPool : MonoBehaviour
     void Update()
     {
         // Impede tiros e recargas antes do início da partida
-        if (gameManager == null || !gameManager.GameStarted)
+        if (gameManager == null || !gameManager.GameStarted || gameManager.GameEnded)
             return;
 
         if (isEnemy && canShoot && Time.time >= nextFireTime)
@@ -66,7 +66,7 @@ public class ShootPool : MonoBehaviour
     }
     void FixedUpdate()
     {
-        if (gameManager == null || !gameManager.GameStarted)
+        if (gameManager == null || !gameManager.GameStarted || gameManager.GameEnded)
         {
             canShoot = false;
             return;
@@ -123,5 +123,14 @@ public class ShootPool : MonoBehaviour
     private void Reload()
     {
         currentAmmo = poolSize;
+    }
+    public void RefillAmmo(int amount)
+    {
+        if (isEnemy)
+            return;
+
+        currentAmmo = Mathf.Min(currentAmmo + amount, poolSize);
+
+        Debug.Log("Munição atual: " + currentAmmo);
     }
 }

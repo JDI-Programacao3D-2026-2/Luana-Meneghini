@@ -44,6 +44,17 @@ public class PlayerHealth : MonoBehaviour
             SceneManager.GetActiveScene().buildIndex
         );
     }
+    public bool Heal(float amount)
+    {
+        if (isDead || currentHealth >= maxHealth)
+            return false;
+
+        currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
+
+        Debug.Log("Vida recuperada: " + currentHealth);
+
+        return true;
+    }
 }
 
 
