@@ -1,3 +1,4 @@
+
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -9,16 +10,41 @@ public class EnemyNavMesh : MonoBehaviour
     public float detectionRange = 10f;
     public float fleeDistance = 4f;
     public LayerMask layerMask;
-
     public float losePlayerDistance = 15f;
+    public GameManager gameManager;
+
     public enum EnemyState
     {
-        WayPatrol, RandomPatrol, Pursuit, Flee
+        WayPatrol,
+        RandomPatrol,
+        Pursuit,
+        Flee
     }
+
     public EnemyState currentState = EnemyState.WayPatrol;
 
+    void Start()
+    {
+        // Mantém os inimigos parados durante a contagem
+        if (agent != null)
+            agent.isStopped = true;
+    }
     void Update()
     {
+        if (gameManager == null || !gameManager.GameStarted || gameManager.GameEnded)
+        {
+            if (agent != null && agent.enabled && agent.isOnNavMesh)
+            {
+                agent.isStopped = true;
+                agent.ResetPath();
+            }
+
+            return;
+        }
+
+        if (agent != null && agent.isStopped)
+            agent.isStopped = false;
+
         FiniteStateMachine();
     }
     public void ChangeState(EnemyState newState)
@@ -45,27 +71,28 @@ public class EnemyNavMesh : MonoBehaviour
                 break;
         }
     }
-
     void Pursuit()
     {
-        if (player != null)
-        {
-            agent.stoppingDistance = 6f;
-            agent.SetDestination(player.position);
-            transform.LookAt(player);
-        }
+        if (player == null) return;
 
-        float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+        agent.stoppingDistance = 6f;
+        agent.SetDestination(player.position);
+        transform.LookAt(player);
+
+        float distanceToPlayer = Vector3.Distance(
+            transform.position,
+            player.position
+        );
+
         if (distanceToPlayer > losePlayerDistance)
         {
             ChangeState(EnemyState.WayPatrol);
         }
-        // se o jogador chegar muito perto, o inimigo foge
+
         if (distanceToPlayer <= fleeDistance)
         {
             ChangeState(EnemyState.Flee);
         }
-        // se o jogador ficar longe demais, volta a patrulhar
         else if (distanceToPlayer > detectionRange)
         {
             ChangeState(EnemyState.WayPatrol);
@@ -74,18 +101,26 @@ public class EnemyNavMesh : MonoBehaviour
     void WayPatrol()
     {
         agent.stoppingDistance = 0f;
-        if (waypoints.Length != 0 && !agent.pathPending &&
-        agent.remainingDistance < 0.5f)
+
+        if (waypoints != null &&
+            waypoints.Length != 0 &&
+            !agent.pathPending &&
+            agent.remainingDistance < 0.5f)
         {
             int randomIndex = Random.Range(0, waypoints.Length);
             agent.SetDestination(waypoints[randomIndex].position);
         }
+
         SearchPlayer();
     }
     void SearchPlayer()
     {
-        if (Physics.Raycast(transform.position, transform.forward,
-        out RaycastHit hit, 20f, layerMask))
+        if (Physics.Raycast(
+            transform.position,
+            transform.forward,
+            out RaycastHit hit,
+            20f,
+            layerMask))
         {
             ChangeState(EnemyState.Pursuit);
             CallBackup();
@@ -93,10 +128,16 @@ public class EnemyNavMesh : MonoBehaviour
     }
     void CallBackup()
     {
-        EnemyNavMesh[] todosInimigos = FindObjectsByType<EnemyNavMesh>();
+        EnemyNavMesh[] todosInimigos =
+            FindObjectsByType<EnemyNavMesh>(FindObjectsSortMode.None);
+
         foreach (EnemyNavMesh aliado in todosInimigos)
         {
-            float distancia = Vector3.Distance(transform.position, aliado.transform.position);
+            float distancia = Vector3.Distance(
+                transform.position,
+                aliado.transform.position
+            );
+
             if (distancia < 10f)
             {
                 aliado.ChangeState(EnemyState.Pursuit);
@@ -105,7 +146,10 @@ public class EnemyNavMesh : MonoBehaviour
     }
     void Flee()
     {
-        if (player == null || waypoints.Length == 0) return;
+        if (player == null ||
+            waypoints == null ||
+            waypoints.Length == 0)
+            return;
 
         agent.stoppingDistance = 0f;
 
@@ -116,7 +160,6 @@ public class EnemyNavMesh : MonoBehaviour
             furthestWaypoint.position
         );
 
-        // procura o waypoint mais distante do jogador
         foreach (Transform waypoint in waypoints)
         {
             float distance = Vector3.Distance(
@@ -131,7 +174,6 @@ public class EnemyNavMesh : MonoBehaviour
             }
         }
 
-        // foge para o waypoint mais distante
         agent.SetDestination(furthestWaypoint.position);
 
         float distanceToPlayer = Vector3.Distance(

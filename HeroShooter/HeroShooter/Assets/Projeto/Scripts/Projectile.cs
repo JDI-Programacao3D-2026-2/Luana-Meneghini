@@ -1,37 +1,57 @@
-using UnityEngine; // Importa as funções da Unity.
+using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
-    public float speed = 10f; 
+    public float speed = 10f;
     public float damage = 25f;
-    private Vector3 direction; 
-    private ShootPool Shootpool; 
+
+    private Vector3 direction;
+    private ShootPool shootPool;
 
     void OnEnable()
     {
-        Invoke("SpawnTime", 5f); 
+        CancelInvoke(nameof(SpawnTime));
+        Invoke(nameof(SpawnTime), 5f);
     }
 
     public void StartProjectile(Vector3 direction, ShootPool shooter)
     {
-        this.direction = direction; 
-        this.Shootpool = shooter;        
+        this.direction = direction;
+        this.shootPool = shooter;
     }
+
     void Update()
-    {       
+    {
         transform.position += direction * speed * Time.deltaTime;
     }
+
     void OnCollisionEnter(Collision collision)
-    {     
+    {
         EnemyHealth enemy = collision.gameObject.GetComponent<EnemyHealth>();
-        if (enemy != null) {
+        PlayerHealth player = collision.gameObject.GetComponent<PlayerHealth>();
+
+        if (enemy != null)
+        {
             enemy.TakeDamage(damage);
         }
-        CancelInvoke("SpawnTime");
-        Shootpool.ReturnProjectile(gameObject);
+        else if (player != null)
+        {
+            player.TakeDamage(damage);
+        }
+
+        CancelInvoke(nameof(SpawnTime));
+
+        if (shootPool != null)
+        {
+            shootPool.ReturnProjectile(gameObject);
+        }
     }
+
     void SpawnTime()
     {
-         Shootpool.ReturnProjectile(gameObject);
+        if (shootPool != null)
+        {
+            shootPool.ReturnProjectile(gameObject);
+        }
     }
 }

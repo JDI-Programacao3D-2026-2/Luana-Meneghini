@@ -14,59 +14,107 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI fragText;
     public TextMeshProUGUI deathText;
     public TextMeshProUGUI playerNameText;
+    public int remainingEnemies = 0;
+    public bool GameEnded { get; private set; } = false;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    // Indica se a partida já começou
+    public bool GameStarted { get; private set; } = false;
+
     void Start()
     {
         StopCountdown = false;
-        startTime = 5;
-    }
+        GameStarted = false;
+        startTime = 5f;
 
-    // Update is called once per frame
+        // Recupera as pontuações anteriores
+        FragScore = GameSession.FragScore;
+        DeathScore = GameSession.DeathScore;
+
+        fragText.text = FragScore.ToString();
+        deathText.text = DeathScore.ToString();
+
+        // Esconde o painel inicialmente
+        tabPanel.SetActive(false);
+
+        remainingEnemies = FindObjectsByType<EnemyHealth>(FindObjectsSortMode.None).Length;
+
+        GameEnded = false;
+    }
     void Update()
     {
-        ScorePanel();
         StartCountDown();
+        ScorePanel();
     }
-
     void StartCountDown()
     {
-        if (startTime > 0 && !StopCountdown)
+        if (GameStarted)
+            return;
+
+        if (startTime > 0f)
         {
             startTime -= Time.deltaTime;
-            gameStartText.text = "Game Starts in: " + startTime.ToString("0");
+
+            gameStartText.text =
+                "Game Starts in: " + Mathf.CeilToInt(startTime);
         }
-        if (startTime <= 0 && !StopCountdown)
+        else
         {
+            startTime = 0f;
+            GameStarted = true;
+
             gameStartText.text = "Game Started!";
-            Invoke("ClearCountDown", 1f);
+            Invoke(nameof(ClearCountDown), 1f);
         }
     }
     void ClearCountDown()
     {
         gameStartText.text = "";
-        StopCountdown = true;
-        startTime = 5;
     }
     void ScorePanel()
     {
-        if (Keyboard.current[Key.Tab].wasPressedThisFrame)
-        {
-            tabPanel.SetActive(!tabPanel.activeSelf);
-        }
+        if (Keyboard.current == null)
+            return;
+
+        // Aparece somente enquanto TAB estiver pressionado
+        tabPanel.SetActive(Keyboard.current.tabKey.isPressed);
     }
     public void UpdateFragScore(int frag)
     {
         FragScore += frag;
+        GameSession.FragScore = FragScore;
+
         fragText.text = FragScore.ToString();
     }
     public void UpdateDeathScore(int death)
     {
         DeathScore += death;
+        GameSession.DeathScore = DeathScore;
+
         deathText.text = DeathScore.ToString();
     }
     public void PlayerLists(string playerName)
     {
         playerNameText.text = playerName;
     }
+    public void EnemyDefeated()
+    {
+        if (GameEnded) return;
+
+        remainingEnemies--;
+
+        Debug.Log("Inimigos restantes: " + remainingEnemies);
+
+        if (remainingEnemies <= 0)
+        {
+            EndGame();
+        }
+    }
+    void EndGame()
+    {
+        GameEnded = true;
+
+        gameStartText.text = "MISSÃO CONCLUÍDA!";
+        Debug.Log("MISSÃO CONCLUÍDA!");
+    }
+
 }
