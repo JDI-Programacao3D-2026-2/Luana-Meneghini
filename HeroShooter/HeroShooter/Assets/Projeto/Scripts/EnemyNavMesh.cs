@@ -1,6 +1,6 @@
-
 using UnityEngine;
 using UnityEngine.AI;
+using System.Collections;
 
 public class EnemyNavMesh : MonoBehaviour
 {
@@ -12,6 +12,7 @@ public class EnemyNavMesh : MonoBehaviour
     public LayerMask layerMask;
     public float losePlayerDistance = 15f;
     public GameManager gameManager;
+    public Skills playerSkills;
 
     public enum EnemyState
     {
@@ -73,7 +74,20 @@ public class EnemyNavMesh : MonoBehaviour
     }
     void Pursuit()
     {
-        if (player == null) return;
+        if (player == null)
+            return;
+
+        // Se o jogador ativar a camuflagem,o inimigo interrompe a perseguição.
+        if (playerSkills != null && playerSkills.IsCamouflaged)
+        {
+            if (agent != null && agent.enabled && agent.isOnNavMesh)
+            {
+                agent.ResetPath();
+            }
+
+            ChangeState(EnemyState.WayPatrol);
+            return;
+        }
 
         agent.stoppingDistance = 6f;
         agent.SetDestination(player.position);
@@ -88,8 +102,7 @@ public class EnemyNavMesh : MonoBehaviour
         {
             ChangeState(EnemyState.WayPatrol);
         }
-
-        if (distanceToPlayer <= fleeDistance)
+        else if (distanceToPlayer <= fleeDistance)
         {
             ChangeState(EnemyState.Flee);
         }
@@ -115,24 +128,51 @@ public class EnemyNavMesh : MonoBehaviour
     }
     void SearchPlayer()
     {
-        if (Physics.Raycast(
-            transform.position,
-            transform.forward,
-            out RaycastHit hit,
-            20f,
-            layerMask))
-        {
-            ChangeState(EnemyState.Pursuit);
-            CallBackup();
+            if (player == null)
+                return;
+
+            // Se o jogador estiver camuflado, o inimigo não o detecta.
+            if (playerSkills != null && playerSkills.IsCamouflaged)
+                return;
+
+            Vector3 direction = player.position - transform.position;
+            float distance = direction.magnitude;
+
+            // O jogador precisa estar dentro do alcance.
+            if (distance > detectionRange)
+                return;
+
+            // Verifica se existe uma linha de visão até o jogador.
+            if (Physics.Raycast(
+                transform.position,
+                direction.normalized,
+                out RaycastHit hit,
+                detectionRange,
+                layerMask))
+            {
+                if (hit.transform == player ||
+                    hit.transform.IsChildOf(player))
+                {
+                    ChangeState(EnemyState.Pursuit);
+                    CallBackup();
+                }
+            }
         }
-    }
     void CallBackup()
     {
+        // Se a comunicação estiver bloqueada,este inimigo não pode chamar reforços.
+        if (communicationsBlocked)
+            return;
+
         EnemyNavMesh[] todosInimigos =
             FindObjectsByType<EnemyNavMesh>(FindObjectsSortMode.None);
 
         foreach (EnemyNavMesh aliado in todosInimigos)
         {
+            // Não precisa chamar a si mesmo.
+            if (aliado == this)
+                continue;
+
             float distancia = Vector3.Distance(
                 transform.position,
                 aliado.transform.position
@@ -185,5 +225,21 @@ public class EnemyNavMesh : MonoBehaviour
         {
             ChangeState(EnemyState.WayPatrol);
         }
+    }
+    private bool communicationsBlocked = false;
+
+    public void BlockCommunications(float duration)
+    {
+        StopCoroutine(nameof(CommunicationBlockTimer));
+        StartCoroutine(CommunicationBlockTimer(duration));
+    }
+
+    private IEnumerator CommunicationBlockTimer(float duration)
+    {
+        communicationsBlocked = true;
+
+        yield return new WaitForSeconds(duration);
+
+        communicationsBlocked = false;
     }
 }

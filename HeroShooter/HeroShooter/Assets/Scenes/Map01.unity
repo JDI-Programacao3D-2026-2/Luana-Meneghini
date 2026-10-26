@@ -770,6 +770,7 @@ MonoBehaviour:
     m_Bits: 0
   player: {fileID: 0}
   gameManager: {fileID: 429519145}
+  playerSkills: {fileID: 0}
 --- !u!114 &243100440
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -782,9 +783,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 500a4ad0ada1945568d1be3a73c5f4ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Skills
-  cd_1: 0
+  gameManager: {fileID: 0}
+  playerHealth: {fileID: 0}
+  playerRb: {fileID: 0}
   skill_Image:
   - {fileID: 563017131}
+  cooldown1: 0
+  cooldown2: 0
+  grenadePrefab: {fileID: 0}
+  grenadeThrowPoint: {fileID: 0}
+  shieldDuration: 5
+  impactRadius: 5
+  impactForce: 12
+  camouflageDuration: 5
+  dashForce: 15
+  scannerRadius: 15
+  scannerDuration: 5
+  communicationBlockDuration: 5
+  communicationRadius: 10
 --- !u!114 &243100441
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3277,6 +3293,7 @@ MonoBehaviour:
     m_Bits: 0
   player: {fileID: 243100437}
   gameManager: {fileID: 429519145}
+  playerSkills: {fileID: 0}
 --- !u!1 &1557096871
 GameObject:
   m_ObjectHideFlags: 0

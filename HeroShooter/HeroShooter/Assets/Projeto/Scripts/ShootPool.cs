@@ -17,6 +17,7 @@ public class ShootPool : MonoBehaviour
     public LayerMask layerMask;
     public Transform player;
     public GameManager gameManager;
+    public Skills playerSkills;
 
     void Awake()
     {
@@ -66,7 +67,9 @@ public class ShootPool : MonoBehaviour
     }
     void FixedUpdate()
     {
-        if (gameManager == null || !gameManager.GameStarted || gameManager.GameEnded)
+        if (gameManager == null ||
+            !gameManager.GameStarted ||
+            gameManager.GameEnded)
         {
             canShoot = false;
             return;
@@ -74,23 +77,46 @@ public class ShootPool : MonoBehaviour
 
         canShoot = false;
 
+        // Só os inimigos precisam verificar a visão do jogador.
+        if (!isEnemy)
+            return;
+
+        // A camuflagem impede os inimigos de atirar.
+        if (playerSkills != null &&
+            playerSkills.IsCamouflaged)
+        {
+            return;
+        }
+
+        if (player == null)
+            return;
+
+        Vector3 direction = player.position - transform.position;
+        float distance = direction.magnitude;
+
+        // O jogador precisa estar dentro do alcance do tiro.
+        if (distance > 7f)
+            return;
+
+        // Verifica se o primeiro objeto atingido é o jogador.
         if (Physics.Raycast(
             transform.position,
-            transform.forward,
+            direction.normalized,
             out RaycastHit hit,
             7f,
             layerMask))
         {
-            canShoot = true;
-            Debug.DrawLine(transform.position, hit.point, Color.green);
-        }
-        else
-        {
-            Debug.DrawLine(
-                transform.position,
-                transform.position + transform.forward * 100f,
-                Color.red
-            );
+            if (hit.transform == player ||
+                hit.transform.IsChildOf(player))
+            {
+                canShoot = true;
+
+                Debug.DrawLine(
+                    transform.position,
+                    hit.point,
+                    Color.green
+                );
+            }
         }
     }
     void Shoot()
@@ -100,8 +126,7 @@ public class ShootPool : MonoBehaviour
 
         GameObject projectile = pool.Get();
 
-        currentAmmo++;
-        currentAmmo -= 2;
+        currentAmmo--;
         activeProjectiles++;
 
         projectile.transform.SetPositionAndRotation(

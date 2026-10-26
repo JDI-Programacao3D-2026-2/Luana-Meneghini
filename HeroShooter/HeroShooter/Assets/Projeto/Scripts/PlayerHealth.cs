@@ -6,8 +6,8 @@ public class PlayerHealth : MonoBehaviour
     public float maxHealth = 100f;
     private float currentHealth;
     private bool isDead = false;
-
     public CharacterStats myStats;
+    public bool IsShielded { get; private set; } = false;
 
     void Start()
     {
@@ -22,6 +22,12 @@ public class PlayerHealth : MonoBehaviour
         currentHealth = Mathf.Max(currentHealth, 0f);
 
         Debug.Log("Vida do player: " + currentHealth);
+
+        if (IsShielded)
+        {
+            Debug.Log("Escudo bloqueou o dano!");
+            return;
+        }
 
         if (currentHealth <= 0f)
         {
@@ -55,7 +61,8 @@ public class PlayerHealth : MonoBehaviour
 
         return true;
     }
+    public void SetShield(bool active)
+    {
+        IsShielded = active;
+    }
 }
-
-
-
