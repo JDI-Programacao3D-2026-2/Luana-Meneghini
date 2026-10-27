@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 
 public class PlayerMove : MonoBehaviour
 {
-    private float speed = 5f;
+    public float speed = 5f;
     public Rigidbody rb;
     public GameManager gameManager;
     private Vector3 direction;
@@ -11,7 +11,9 @@ public class PlayerMove : MonoBehaviour
     void Update()
     {
         // Impede o movimento antes do início da partida
-        if (gameManager == null || !gameManager.GameStarted || gameManager.GameEnded)
+        if (gameManager == null ||
+            !gameManager.GameStarted ||
+            gameManager.GameEnded)
         {
             direction = Vector3.zero;
             return;
@@ -41,7 +43,9 @@ public class PlayerMove : MonoBehaviour
     }
     void FixedUpdate()
     {
-        if (gameManager == null || !gameManager.GameStarted || gameManager.GameEnded)
+        if (gameManager == null ||
+            !gameManager.GameStarted ||
+            gameManager.GameEnded)
         {
             rb.linearVelocity = new Vector3(
                 0,
@@ -51,11 +55,46 @@ public class PlayerMove : MonoBehaviour
 
             return;
         }
+        
+        if (isDashing)
+        {
+            if (Time.time < dashEndTime)
+            {
+                rb.linearVelocity = new Vector3(
+                    dashDirection.x * 15f,
+                    rb.linearVelocity.y,
+                    dashDirection.z * 15f
+                );
+
+                return;
+            }
+
+            isDashing = false;
+        }
 
         rb.linearVelocity = new Vector3(
             direction.x * speed,
             rb.linearVelocity.y,
             direction.z * speed
+        );
+    }
+    private bool isDashing;
+    private Vector3 dashDirection;
+    private float dashEndTime;
+
+    public void StartDash(float dashSpeed, float dashDuration)
+    {
+        dashDirection = transform.forward;
+        dashDirection.y = 0f;
+        dashDirection.Normalize();
+
+        isDashing = true;
+        dashEndTime = Time.time + dashDuration;
+
+        rb.linearVelocity = new Vector3(
+            dashDirection.x * dashSpeed,
+            rb.linearVelocity.y,
+            dashDirection.z * dashSpeed
         );
     }
 }

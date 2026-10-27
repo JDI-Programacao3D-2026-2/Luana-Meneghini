@@ -22,7 +22,7 @@ public class CharacterSelectController : MonoBehaviour
         "Camuflagem: dificulta a detecção por alguns segundos.\n\n" +
         "Investida: avança rapidamente em uma direção.",
 
-        "Scanner: revela inimigos próximos.\n\n" +
+        "Adrenalina: aumenta a velocidade de movimento temporariamente.\n\n" +
         "Bloqueio de comunicação: impede temporariamente " +
         "que inimigos afetados chamem reforços."
     };

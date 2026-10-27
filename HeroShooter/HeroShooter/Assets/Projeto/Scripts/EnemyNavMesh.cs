@@ -8,11 +8,13 @@ public class EnemyNavMesh : MonoBehaviour
     public NavMeshAgent agent;
     public Transform[] waypoints;
     public float detectionRange = 10f;
-    public float fleeDistance = 4f;
+    public float fleeDistance = 2f;
     public LayerMask layerMask;
     public float losePlayerDistance = 15f;
     public GameManager gameManager;
     public Skills playerSkills;
+    private bool beingPushed = false;
+    private Coroutine pushCoroutine;
 
     public enum EnemyState
     {
@@ -42,6 +44,9 @@ public class EnemyNavMesh : MonoBehaviour
 
             return;
         }
+       
+        if (beingPushed)
+            return;
 
         if (agent != null && agent.isStopped)
             agent.isStopped = false;
@@ -241,5 +246,85 @@ public class EnemyNavMesh : MonoBehaviour
         yield return new WaitForSeconds(duration);
 
         communicationsBlocked = false;
+    }
+    public void PushAway(Vector3 direction, float distance)
+    {
+        if (agent == null || !agent.enabled || !agent.isOnNavMesh)
+        {
+            Debug.LogWarning(name + ": NavMeshAgent inválido para Impacto.");
+            return;
+        }
+
+        if (pushCoroutine != null)
+            StopCoroutine(pushCoroutine);
+
+        pushCoroutine = StartCoroutine(
+            PushAwayCoroutine(direction, distance)
+        );
+    }
+    private IEnumerator PushAwayCoroutine(
+        Vector3 direction,
+        float distance)
+    {
+        beingPushed = true;
+
+        direction.y = 0f;
+
+        if (direction.sqrMagnitude < 0.01f)
+            direction = -transform.forward;
+
+        direction.Normalize();
+
+        agent.isStopped = false;
+        agent.stoppingDistance = 0f;
+        agent.ResetPath();
+
+        Vector3 desiredPosition =
+            transform.position + direction * distance;
+
+        if (NavMesh.SamplePosition(
+            desiredPosition,
+            out NavMeshHit hit,
+            5f,
+            agent.areaMask))
+        {
+            NavMeshPath path = new NavMeshPath();
+
+            bool pathFound = agent.CalculatePath(hit.position, path);
+
+            if (pathFound && path.status == NavMeshPathStatus.PathComplete)
+            {
+                agent.SetDestination(hit.position);
+
+                Debug.Log(name + " | isStopped: " + agent.isStopped + " | hasPath: " + agent.hasPath + " | pathStatus: " + agent.pathStatus + " | speed: " + agent.speed + " | velocity: " + agent.velocity
+);
+
+                float timeout = 2f;
+
+                while (timeout > 0f &&
+                       agent != null &&
+                       agent.enabled &&
+                       agent.isOnNavMesh &&
+                       (agent.pathPending ||
+                        agent.remainingDistance > agent.stoppingDistance + 0.2f))
+                {
+                    timeout -= Time.deltaTime;
+                    yield return null;
+                }
+
+                Debug.Log(name + ": destino do Impacto = " + hit.position);
+            }
+            else
+            {
+                Debug.LogWarning(name + ": não foi possível calcular um caminho para o Impacto.");
+            }
+        }
+        else
+        {
+            Debug.LogWarning(name + ": não foi encontrado um ponto navegável para o Impacto.");
+        }
+
+        beingPushed = false;
+        pushCoroutine = null;
     }
 }

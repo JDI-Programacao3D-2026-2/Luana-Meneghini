@@ -1,3 +1,4 @@
+
 using UnityEngine;
 
 public class Projectile : MonoBehaviour
@@ -27,24 +28,31 @@ public class Projectile : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        EnemyHealth enemy = collision.gameObject.GetComponent<EnemyHealth>();
-        PlayerHealth player = collision.gameObject.GetComponent<PlayerHealth>();
+        if (shootPool == null)
+            return;
 
-        if (enemy != null)
+        EnemyHealth enemy = collision.gameObject.GetComponentInParent<EnemyHealth>();
+        PlayerHealth player = collision.gameObject.GetComponentInParent<PlayerHealth>();
+
+        if (shootPool.isEnemy)
         {
-            enemy.TakeDamage(damage);
+            // Bala inimiga: só causa dano ao jogador.
+            if (player != null)
+            {
+                player.TakeDamage(damage);
+            }
         }
-        else if (player != null)
+        else
         {
-            player.TakeDamage(damage);
+            // Bala do jogador: só causa dano aos inimigos.
+            if (enemy != null)
+            {
+                enemy.TakeDamage(damage);
+            }
         }
 
         CancelInvoke(nameof(SpawnTime));
-
-        if (shootPool != null)
-        {
-            shootPool.ReturnProjectile(gameObject);
-        }
+        shootPool.ReturnProjectile(gameObject);
     }
 
     void SpawnTime()
@@ -52,6 +60,10 @@ public class Projectile : MonoBehaviour
         if (shootPool != null)
         {
             shootPool.ReturnProjectile(gameObject);
+        }
+        else
+        {
+            gameObject.SetActive(false);
         }
     }
 }

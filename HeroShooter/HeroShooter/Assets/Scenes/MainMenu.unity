@@ -772,7 +772,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 14.8, y: 163.1}
+  m_AnchoredPosition: {x: 14.8, y: 174.8}
   m_SizeDelta: {x: 271.4319, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &837373989
@@ -1091,7 +1091,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 8.2, y: -190.7}
+  m_AnchoredPosition: {x: 28, y: -214}
   m_SizeDelta: {x: 571.7564, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1150549731
@@ -1141,14 +1141,14 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 20
-  m_fontSizeBase: 20
+  m_fontSize: 15
+  m_fontSizeBase: 15
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
+  m_HorizontalAlignment: 2
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
@@ -1590,8 +1590,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 6.8, y: 91}
-  m_SizeDelta: {x: 524.092, y: 50}
+  m_AnchoredPosition: {x: 26.3, y: 116}
+  m_SizeDelta: {x: 457.0875, y: 32.2026}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1602951921
 MonoBehaviour:
@@ -1613,7 +1613,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "W, A, S, D: movimentar o personagem.\n\nBot\xE3o esquerdo do mouse: atirar.\n\nQ: interagir e recolher itens.\n\nE: lan\xE7ar uma granada recolhida."
+  m_text: "W, A, S, D: movimentar o personagem.\n\nBot\xE3o esquerdo do mouse: atirar.\n\nQ: interagir e recolher itens.\n\nE: lan\xE7ar uma granada recolhida.\n\n1: ativar a primeira habilidade especial do agente selecionado.\n\n2: ativar a segunda habilidade especial do agente selecionado."
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1640,8 +1640,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 30
-  m_fontSizeBase: 30
+  m_fontSize: 20
+  m_fontSizeBase: 20
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18

@@ -10,6 +10,7 @@ public class Skills : MonoBehaviour
     public GameManager gameManager;
     public PlayerHealth playerHealth;
     public Rigidbody playerRb;
+    public PlayerMove playerMove;
 
     [Header("Cooldowns")]
     public Image[] skill_Image;
@@ -23,7 +24,7 @@ public class Skills : MonoBehaviour
 
     [Header("Defensor")]
     public float shieldDuration = 5f;
-    public float impactRadius = 5f;
+    public float impactRadius = 25f;
     public float impactForce = 12f;
 
     [Header("Infiltrador")]
@@ -31,10 +32,11 @@ public class Skills : MonoBehaviour
     public float dashForce = 15f;
 
     [Header("Reconhecimento")]
-    public float scannerRadius = 15f;
-    public float scannerDuration = 5f;
+    public float adrenalineDuration = 5f;
+    public float adrenalineSpeedMultiplier = 1.8f;
     public float communicationBlockDuration = 5f;
     public float communicationRadius = 10f;
+
     public bool IsCamouflaged { get; private set; }
     private int selectedAgent;
     private bool skill1Ready = true;
@@ -43,6 +45,7 @@ public class Skills : MonoBehaviour
     void Start()
     {
         selectedAgent = GameSession.SelectedAgent;
+        Debug.Log("Agente selecionado: " + selectedAgent);
 
         if (skill_Image != null)
         {
@@ -63,19 +66,38 @@ public class Skills : MonoBehaviour
         if (Keyboard.current == null)
             return;
 
-        if (Keyboard.current.digit1Key.wasPressedThisFrame &&
-            skill1Ready)
+        if (Keyboard.current.digit1Key.wasPressedThisFrame)
         {
-            StartCoroutine(Cooldown(1));
-            ActivateSkill1();
+            Debug.Log("Tecla 1 detectada!");
+
+            if (skill1Ready)
+            {
+                Debug.Log("Habilidade 1 ativada!");
+                StartCoroutine(Cooldown(1));
+                ActivateSkill1();
+            }
+            else
+            {
+                Debug.Log("Habilidade 1 em cooldown!");
+            }
         }
 
-        if (Keyboard.current.digit2Key.wasPressedThisFrame &&
-            skill2Ready)
+        if (Keyboard.current.digit2Key.wasPressedThisFrame)
         {
-            StartCoroutine(Cooldown(2));
-            ActivateSkill2();
+            Debug.Log("Tecla 2 detectada!");
+
+            if (skill2Ready)
+            {
+                Debug.Log("Habilidade 2 ativada!");
+                StartCoroutine(Cooldown(2));
+                ActivateSkill2();
+            }
+            else
+            {
+                Debug.Log("Habilidade 2 em cooldown!");
+            }
         }
+
         if (Keyboard.current.eKey.wasPressedThisFrame)
         {
             ThrowGrenade();
@@ -83,6 +105,8 @@ public class Skills : MonoBehaviour
     }
     void ActivateSkill1()
     {
+        Debug.Log("ActivateSkill1 executado. Agente: " + selectedAgent);
+
         switch (selectedAgent)
         {
             case 0:
@@ -94,12 +118,18 @@ public class Skills : MonoBehaviour
                 break;
 
             case 2:
-                Scanner();
+                StartCoroutine(Adrenaline());
+                break;
+
+            default:
+                Debug.LogError("Agente inválido: " + selectedAgent);
                 break;
         }
     }
     void ActivateSkill2()
     {
+        Debug.Log("ActivateSkill2 executado. Agente: " + selectedAgent);
+
         switch (selectedAgent)
         {
             case 0:
@@ -112,6 +142,10 @@ public class Skills : MonoBehaviour
 
             case 2:
                 BlockCommunication();
+                break;
+
+            default:
+                Debug.LogError("Agente inválido: " + selectedAgent);
                 break;
         }
     }
@@ -166,33 +200,38 @@ public class Skills : MonoBehaviour
     void Impact()
     {
         Collider[] hits = Physics.OverlapSphere(
-            transform.position, impactRadius);
+            transform.position,
+            impactRadius
+        );
 
-        HashSet<Rigidbody> pushed = new HashSet<Rigidbody>();
+        HashSet<EnemyNavMesh> enemies =
+            new HashSet<EnemyNavMesh>();
 
         foreach (Collider hit in hits)
         {
-            EnemyHealth enemy =
-                hit.GetComponentInParent<EnemyHealth>();
+            EnemyNavMesh enemy =
+                hit.GetComponentInParent<EnemyNavMesh>();
 
             if (enemy == null)
-                continue;
+                enemy = hit.GetComponentInChildren<EnemyNavMesh>();
 
-            Rigidbody rb = enemy.GetComponent<Rigidbody>();
-
-            if (rb == null || !pushed.Add(rb))
+            if (enemy == null || !enemies.Add(enemy))
                 continue;
 
             Vector3 direction =
                 enemy.transform.position - transform.position;
 
             direction.y = 0f;
-            direction.Normalize();
 
-            rb.AddForce(
-                direction * impactForce,
-                ForceMode.Impulse);
+            if (direction.sqrMagnitude < 0.01f)
+                direction = transform.forward;
+
+            enemy.PushAway(direction, 8f);
         }
+
+        Debug.Log(
+            "Impacto ativado! Inimigos afastados: " + enemies.Count
+        );
     }
     IEnumerator Camouflage()
     {
@@ -200,45 +239,33 @@ public class Skills : MonoBehaviour
         yield return new WaitForSeconds(camouflageDuration);
         IsCamouflaged = false;
     }
-
     void Dash()
     {
-        if (playerRb == null)
+        if (playerMove == null)
             return;
 
-        Vector3 direction = transform.forward;
-        direction.y = 0f;
-        direction.Normalize();
-
-        playerRb.AddForce(
-            direction * dashForce,
-            ForceMode.VelocityChange);
+        playerMove.StartDash(15f, 0.3f);
     }
-
-    void Scanner()
+    IEnumerator Adrenaline()
     {
-        Collider[] hits = Physics.OverlapSphere(
-            transform.position, scannerRadius);
+        if (playerMove == null)
+            yield break;
 
-        HashSet<EnemyHealth> enemies =
-            new HashSet<EnemyHealth>();
+        float originalSpeed = playerMove.speed;
 
-        foreach (Collider hit in hits)
+        playerMove.speed =
+            originalSpeed * adrenalineSpeedMultiplier;
+
+        Debug.Log("Adrenalina ativada!");
+
+        yield return new WaitForSeconds(adrenalineDuration);
+
+        if (playerMove != null)
         {
-            EnemyHealth enemy =
-                hit.GetComponentInParent<EnemyHealth>();
-
-            if (enemy != null)
-                enemies.Add(enemy);
+            playerMove.speed = originalSpeed;
         }
 
-        foreach (EnemyHealth enemy in enemies)
-        {
-            enemy.Reveal(scannerDuration);
-        }
-
-        Debug.Log("Scanner ativado! Inimigos próximos: "
-                  + enemies.Count);
+        Debug.Log("Adrenalina encerrada!");
     }
     void BlockCommunication()
     {

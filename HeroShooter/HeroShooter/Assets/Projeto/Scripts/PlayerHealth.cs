@@ -13,21 +13,20 @@ public class PlayerHealth : MonoBehaviour
     {
         currentHealth = maxHealth;
     }
-
     public void TakeDamage(float amount)
     {
         if (isDead) return;
-
-        currentHealth -= amount;
-        currentHealth = Mathf.Max(currentHealth, 0f);
-
-        Debug.Log("Vida do player: " + currentHealth);
 
         if (IsShielded)
         {
             Debug.Log("Escudo bloqueou o dano!");
             return;
         }
+
+        currentHealth -= amount;
+        currentHealth = Mathf.Max(currentHealth, 0f);
+
+        Debug.Log("Vida do player: " + currentHealth);
 
         if (currentHealth <= 0f)
         {
