@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 4933104285224949376}
   - component: {fileID: 8938653587349425573}
   - component: {fileID: 5756934406878563453}
-  - component: {fileID: 8285364461734672907}
   m_Layer: 0
   m_Name: Arch
   m_TagString: Untagged
@@ -1180,28 +1179,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5937737671278101384}
   m_Mesh: {fileID: 0}
---- !u!64 &8285364461734672907
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5937737671278101384}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 0}
 --- !u!1 &7112063780812559132
 GameObject:
   m_ObjectHideFlags: 0
@@ -1215,7 +1192,6 @@ GameObject:
   - component: {fileID: 7968766524027849448}
   - component: {fileID: 5002440158612830865}
   - component: {fileID: 2593662964386326308}
-  - component: {fileID: 5727263895164448743}
   m_Layer: 0
   m_Name: pino
   m_TagString: Untagged
@@ -1536,28 +1512,6 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7112063780812559132}
-  m_Mesh: {fileID: 0}
---- !u!64 &5727263895164448743
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7112063780812559132}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
   m_Mesh: {fileID: 0}
 --- !u!1 &7950654782513580982
 GameObject:
