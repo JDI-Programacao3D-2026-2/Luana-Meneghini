@@ -36,6 +36,7 @@ public class GameManager : MonoBehaviour
         // Esconde o painel inicialmente
         tabPanel.SetActive(false);
 
+        // Busca no mapa quantos inimigos existem ao iniciar a fase
         remainingEnemies = FindObjectsByType<EnemyHealth>(FindObjectsSortMode.None).Length;
 
         GameEnded = false;
@@ -81,14 +82,14 @@ public class GameManager : MonoBehaviour
     public void UpdateFragScore(int frag)
     {
         FragScore += frag;
-        GameSession.FragScore = FragScore;
+        GameSession.FragScore = FragScore; // Persiste os dados na sessão
 
         fragText.text = FragScore.ToString();
     }
     public void UpdateDeathScore(int death)
     {
         DeathScore += death;
-        GameSession.DeathScore = DeathScore;
+        GameSession.DeathScore = DeathScore; // Persiste os dados na sessão
 
         deathText.text = DeathScore.ToString();
     }
@@ -104,6 +105,7 @@ public class GameManager : MonoBehaviour
 
         Debug.Log("Inimigos restantes: " + remainingEnemies);
 
+        // Checa se a quantidade de inimigos zerou
         if (remainingEnemies <= 0)
         {
             EndGame();

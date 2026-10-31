@@ -11,6 +11,7 @@ public class Projectile : MonoBehaviour
 
     void OnEnable()
     {
+        // Agenda a devolução do projétil caso ele viaje por 5 segundos sem atingir nada
         CancelInvoke(nameof(SpawnTime));
         Invoke(nameof(SpawnTime), 5f);
     }
@@ -23,6 +24,7 @@ public class Projectile : MonoBehaviour
 
     void Update()
     {
+        // Move o projétil no espaço com base no tempo entre quadros
         transform.position += direction * speed * Time.deltaTime;
     }
 
@@ -34,6 +36,7 @@ public class Projectile : MonoBehaviour
         EnemyHealth enemy = collision.gameObject.GetComponentInParent<EnemyHealth>();
         PlayerHealth player = collision.gameObject.GetComponentInParent<PlayerHealth>();
 
+        // Filtra o dano de acordo com a origem do disparo
         if (shootPool.isEnemy)
         {
             // Bala inimiga: só causa dano ao jogador.
@@ -52,7 +55,7 @@ public class Projectile : MonoBehaviour
         }
 
         CancelInvoke(nameof(SpawnTime));
-        shootPool.ReturnProjectile(gameObject);
+        shootPool.ReturnProjectile(gameObject); // Devolve o projétil à pool
     }
 
     void SpawnTime()

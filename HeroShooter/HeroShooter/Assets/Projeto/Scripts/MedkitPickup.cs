@@ -12,9 +12,11 @@ public class MedkitPickup : MonoBehaviour
         if (used || nearbyPlayer == null)
             return;
 
+        // Se o jogador pressionar 'Q' enquanto estiver na área
         if (Keyboard.current != null &&
             Keyboard.current[Key.Q].wasPressedThisFrame)
         {
+            // Tenta curar o jogador; se der certo, consome o kit de cura
             if (nearbyPlayer.Heal(healAmount))
             {
                 used = true;
@@ -35,6 +37,7 @@ public class MedkitPickup : MonoBehaviour
         PlayerHealth health =
             other.GetComponentInParent<PlayerHealth>();
 
+        // Registra o jogador ao entrar na área
         if (stats != null &&
             stats.team == CharacterStats.TeamType.Player &&
             health != null)
@@ -47,6 +50,7 @@ public class MedkitPickup : MonoBehaviour
         PlayerHealth health =
             other.GetComponentInParent<PlayerHealth>();
 
+        // Limpa a referência ao sair da área
         if (health != null && health == nearbyPlayer)
         {
             nearbyPlayer = null;

@@ -29,24 +29,29 @@ public class EnemyHealth : MonoBehaviour
 
         isDead = true;
 
+        // Atualiza a contagem de kills do jogador e mortes do inimigo
         PlayerStats.AddKill();
         myStats.AddDeath();
 
         // Avisa o GameManager que um inimigo foi derrotado
         PlayerStats.gameManager.EnemyDefeated();
 
+        // Desativa o GameObject do inimigo
         gameObject.SetActive(false);
     }
-
+    
+    // Variáveis para gerenciar o efeito visual de revelação por habilidade
     private Coroutine revealCoroutine;
     private Renderer[] enemyRenderers;
     private Color[][] originalColors;
 
     public void Reveal(float duration)
     {
+        // Se já houver um efeito ativo, interrompe a rotina anterior
         if (revealCoroutine != null)
             StopCoroutine(revealCoroutine);
 
+        // Mapeia e guarda os materiais e cores originais do modelo 3D no primeiro uso
         if (enemyRenderers == null)
         {
             enemyRenderers = GetComponentsInChildren<Renderer>();
@@ -63,18 +68,22 @@ public class EnemyHealth : MonoBehaviour
             }
         }
 
+        // Inicia a Corrotina que alterará a cor
         revealCoroutine = StartCoroutine(RevealEffect(duration));
     }
     private System.Collections.IEnumerator RevealEffect(float duration)
     {
+        // Troca a cor de todos os materiais para Amarelo
         foreach (Renderer renderer in enemyRenderers)
         {
             foreach (Material material in renderer.materials)
                 material.color = Color.yellow;
         }
 
+        // Espera o tempo definido
         yield return new WaitForSeconds(duration);
 
+        // Restaura as cores originais dos materiais
         for (int i = 0; i < enemyRenderers.Length; i++)
         {
             if (enemyRenderers[i] == null)

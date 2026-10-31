@@ -17,6 +17,7 @@ public class PlayerHealth : MonoBehaviour
     {
         if (isDead) return;
 
+        // Se a habilidade de Escudo do Defensor estiver ativa, bloqueia todo o dano
         if (IsShielded)
         {
             Debug.Log("Escudo bloqueou o dano!");
@@ -39,8 +40,9 @@ public class PlayerHealth : MonoBehaviour
 
         isDead = true;
 
-        myStats.AddDeath();
+        myStats.AddDeath(); // Registra a morte do jogador no placar
 
+        // Reinicia o nível após 2 segundos
         Invoke(nameof(RestartLevel), 2f);
     }
     void RestartLevel()
@@ -51,6 +53,7 @@ public class PlayerHealth : MonoBehaviour
     }
     public bool Heal(float amount)
     {
+        // Não cura se estiver morto ou com a vida cheia
         if (isDead || currentHealth >= maxHealth)
             return false;
 

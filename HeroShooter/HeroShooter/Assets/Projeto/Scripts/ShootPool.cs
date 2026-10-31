@@ -23,10 +23,11 @@ public class ShootPool : MonoBehaviour
     {
         currentAmmo = poolSize;
 
+        // Cria a piscina de objetos (Object Pool)
         pool = new ObjectPool<GameObject>(
-            () => Instantiate(projectilePrefab),
-            projectile => projectile.SetActive(true),
-            projectile => projectile.SetActive(false),
+            () => Instantiate(projectilePrefab), // Instancia quando a pool precisa crescer
+            projectile => projectile.SetActive(true), // Ativa o projétil ao reutilizar
+            projectile => projectile.SetActive(false), // Desativa o projétil ao devolver
             projectile => Destroy(projectile),
             false,
             poolSize,
@@ -39,17 +40,20 @@ public class ShootPool : MonoBehaviour
         if (gameManager == null || !gameManager.GameStarted || gameManager.GameEnded)
             return;
 
+        // Lógica de disparo autônomo para inimigos
         if (isEnemy && canShoot && Time.time >= nextFireTime)
         {
             Shoot();
             nextFireTime = Time.time + fireRate;
         }
 
+        // Recarga automática para o inimigo quando fica sem munição
         if (isEnemy && currentAmmo <= 0 && !IsInvoking(nameof(Reload)))
         {
             Invoke(nameof(Reload), 2f);
         }
 
+        // Disparo do jogador (Botão esquerdo do mouse)
         if (!isEnemy &&
             Mouse.current != null &&
             Mouse.current.leftButton.wasPressedThisFrame)
@@ -57,6 +61,7 @@ public class ShootPool : MonoBehaviour
             Shoot();
         }
 
+        // Recarga do jogador (Tecla R)
         if (!isEnemy &&
             Keyboard.current != null &&
             Keyboard.current[Key.R].isPressed &&
@@ -124,6 +129,7 @@ public class ShootPool : MonoBehaviour
         if (currentAmmo <= 0 || activeProjectiles >= poolSize)
             return;
 
+        // Retira um projétil inativo da pool
         GameObject projectile = pool.Get();
 
         currentAmmo--;
@@ -137,6 +143,7 @@ public class ShootPool : MonoBehaviour
         projectile.GetComponent<Projectile>()
             .StartProjectile(firePoint.forward, this);
     }
+    // Retorna o projétil para a piscina de objetos após colidir ou expirar
     public void ReturnProjectile(GameObject projectile)
     {
         if (activeProjectiles > 0)

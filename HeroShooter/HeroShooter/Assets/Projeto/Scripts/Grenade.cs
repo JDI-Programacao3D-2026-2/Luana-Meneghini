@@ -21,9 +21,11 @@ public class Grenade : MonoBehaviour
         if (rb == null)
             rb = GetComponent<Rigidbody>();
 
+        // Libera a física e aplica uma força de impulso
         rb.isKinematic = false;
         rb.AddForce(direction * throwForce, ForceMode.Impulse);
 
+        // Inicia a contagem para a explosão
         StartCoroutine(ExplodeAfterDelay());
     }
     IEnumerator ExplodeAfterDelay()
@@ -34,24 +36,23 @@ public class Grenade : MonoBehaviour
     }
     void Explode()
     {
-        if (hasExploded)
-            return;
-
+        if (hasExploded) return;
         hasExploded = true;
 
+        // Cria uma esfera de colisão invisível na posição para detectar objetos próximos
         Collider[] hits = Physics.OverlapSphere(
             transform.position,
             explosionRadius
         );
 
-        HashSet<EnemyHealth> damagedEnemies =
-            new HashSet<EnemyHealth>();
+        // Utiliza HashSet para garantir que o mesmo inimigo não receba dano duplicado se tiver múltiplos colliders
+        HashSet<EnemyHealth> damagedEnemies = new HashSet<EnemyHealth>();
 
         foreach (Collider hit in hits)
         {
-            EnemyHealth enemy =
-                hit.GetComponentInParent<EnemyHealth>();
+            EnemyHealth enemy = hit.GetComponentInParent<EnemyHealth>();
 
+            // Adiciona ao HashSet e, se for a primeira vez que é inserido, aplica o dano
             if (enemy != null && damagedEnemies.Add(enemy))
             {
                 enemy.TakeDamage(damage);
@@ -62,6 +63,7 @@ public class Grenade : MonoBehaviour
 
         Destroy(gameObject);
     }
+    // Desenha uma esfera vermelha na janela Scene da Unity para visualizar o alcance no editor
     void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;

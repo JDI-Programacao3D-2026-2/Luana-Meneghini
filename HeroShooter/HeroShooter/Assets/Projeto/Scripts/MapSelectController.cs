@@ -9,6 +9,7 @@ public class MapSelectController : MonoBehaviour
 
     private void Start()
     {
+        // Desativa a interação dos botões de mapas bloqueados
         map2Button.interactable = false;
         map3Button.interactable = false;
     }

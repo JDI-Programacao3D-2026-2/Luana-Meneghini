@@ -13,24 +13,28 @@ public class Skills : MonoBehaviour
     public PlayerMove playerMove;
 
     [Header("Cooldowns")]
-    public Image[] skill_Image;
+    public Image[] skill_Image; // Ícones na UI para representar o tempo de recarga
     public float cooldown1 = 10f;
     public float cooldown2 = 10f;
+    public float cooldown3 = 10f;
 
     [Header("Granada")]
     public GameObject grenadePrefab;
     public Transform grenadeThrowPoint;
     private bool hasGrenade = false;
 
+    // Atributos ajustáveis para as habilidades do Defensor (Agente 0)
     [Header("Defensor")]
     public float shieldDuration = 5f;
     public float impactRadius = 25f;
     public float impactForce = 12f;
 
+    // Atributos para o Infiltrador (Agente 1)
     [Header("Infiltrador")]
     public float camouflageDuration = 5f;
     public float dashForce = 15f;
 
+    // Atributos para o Reconhecimento (Agente 2)
     [Header("Reconhecimento")]
     public float adrenalineDuration = 5f;
     public float adrenalineSpeedMultiplier = 1.8f;
@@ -41,12 +45,15 @@ public class Skills : MonoBehaviour
     private int selectedAgent;
     private bool skill1Ready = true;
     private bool skill2Ready = true;
+    private bool skill3Ready = true;
 
     void Start()
     {
+        // Recupera qual agente foi escolhido no menu de seleção
         selectedAgent = GameSession.SelectedAgent;
         Debug.Log("Agente selecionado: " + selectedAgent);
 
+        // Garante que as imagens de cooldown comecem totalmente preenchidas
         if (skill_Image != null)
         {
             foreach (Image image in skill_Image)
@@ -58,6 +65,7 @@ public class Skills : MonoBehaviour
     }
     void Update()
     {
+        // Cancela leituras se o jogo não tiver começado ou se já tiver terminado
         if (gameManager == null ||
             !gameManager.GameStarted ||
             gameManager.GameEnded)
@@ -66,6 +74,7 @@ public class Skills : MonoBehaviour
         if (Keyboard.current == null)
             return;
 
+        // Ativação da Habilidade 1 (Tecla 1)
         if (Keyboard.current.digit1Key.wasPressedThisFrame)
         {
             Debug.Log("Tecla 1 detectada!");
@@ -82,6 +91,7 @@ public class Skills : MonoBehaviour
             }
         }
 
+        // Ativação da Habilidade 2 (Tecla 2)
         if (Keyboard.current.digit2Key.wasPressedThisFrame)
         {
             Debug.Log("Tecla 2 detectada!");
@@ -98,15 +108,25 @@ public class Skills : MonoBehaviour
             }
         }
 
+        // Arremesso de Granada (Tecla E)
         if (Keyboard.current.eKey.wasPressedThisFrame)
         {
-            ThrowGrenade();
+            if (skill3Ready && hasGrenade)
+            {
+                ThrowGrenade();
+
+                if (!hasGrenade)
+                {
+                    StartCoroutine(Cooldown(3));
+                }
+            }
         }
     }
     void ActivateSkill1()
     {
         Debug.Log("ActivateSkill1 executado. Agente: " + selectedAgent);
 
+        // Redireciona a ação com base no agente selecionado
         switch (selectedAgent)
         {
             case 0:
@@ -149,16 +169,23 @@ public class Skills : MonoBehaviour
                 break;
         }
     }
+    // Corrotina para recarga visual e temporal das habilidades
     IEnumerator Cooldown(int skillNumber)
     {
         if (skillNumber == 1)
             skill1Ready = false;
-        else
+        else if (skillNumber == 2)
             skill2Ready = false;
+        else if (skillNumber == 3)
+            skill3Ready = false;
 
-        float duration = skillNumber == 1
-            ? cooldown1
-            : cooldown2;
+        float duration = skillNumber switch
+        {
+            1 => cooldown1,
+            2 => cooldown2,
+            3 => cooldown3,
+            _ => 0f
+        };
 
         Image image = skill_Image != null &&
                       skill_Image.Length >= skillNumber
@@ -175,7 +202,7 @@ public class Skills : MonoBehaviour
             elapsed += Time.deltaTime;
 
             if (image != null)
-                image.fillAmount = elapsed / duration;
+                image.fillAmount = Mathf.Clamp01(elapsed / duration); // Preenche a barra proporcionalmente ao tempo
 
             yield return null;
         }
@@ -185,9 +212,12 @@ public class Skills : MonoBehaviour
 
         if (skillNumber == 1)
             skill1Ready = true;
-        else
+        else if (skillNumber == 2)
             skill2Ready = true;
+        else if (skillNumber == 3)
+            skill3Ready = true;
     }
+
     IEnumerator Shield()
     {
         if (playerHealth == null)
@@ -304,6 +334,7 @@ public class Skills : MonoBehaviour
             grenadeThrowPoint == null)
             return;
 
+        // Instancia o objeto da granada e dispara na direção do ponto de arremesso
         GameObject grenadeObject = Instantiate(
             grenadePrefab,
             grenadeThrowPoint.position,
@@ -315,7 +346,7 @@ public class Skills : MonoBehaviour
         if (grenade != null)
         {
             grenade.Throw(grenadeThrowPoint.forward);
-            hasGrenade = false;
+            hasGrenade = false; // Consome a granada
         }
     }
 }

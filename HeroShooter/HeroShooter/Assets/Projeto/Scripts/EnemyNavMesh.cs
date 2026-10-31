@@ -148,12 +148,7 @@ public class EnemyNavMesh : MonoBehaviour
                 return;
 
             // Verifica se existe uma linha de visão até o jogador.
-            if (Physics.Raycast(
-                transform.position,
-                direction.normalized,
-                out RaycastHit hit,
-                detectionRange,
-                layerMask))
+            if (Physics.Raycast(transform.position, direction.normalized, out RaycastHit hit, detectionRange, layerMask))
             {
                 if (hit.transform == player ||
                     hit.transform.IsChildOf(player))
@@ -243,7 +238,7 @@ public class EnemyNavMesh : MonoBehaviour
     {
         communicationsBlocked = true;
 
-        yield return new WaitForSeconds(duration);
+        yield return new WaitForSeconds(duration); // Espera o tempo estipulado pela habilidade
 
         communicationsBlocked = false;
     }
@@ -267,26 +262,20 @@ public class EnemyNavMesh : MonoBehaviour
         float distance)
     {
         beingPushed = true;
-
-        direction.y = 0f;
+        direction.y = 0f; // Ignora o eixo vertical para não empurrar para o chão/céu
 
         if (direction.sqrMagnitude < 0.01f)
             direction = -transform.forward;
 
         direction.Normalize();
-
         agent.isStopped = false;
         agent.stoppingDistance = 0f;
         agent.ResetPath();
 
-        Vector3 desiredPosition =
-            transform.position + direction * distance;
+        Vector3 desiredPosition = transform.position + direction * distance;
 
-        if (NavMesh.SamplePosition(
-            desiredPosition,
-            out NavMeshHit hit,
-            5f,
-            agent.areaMask))
+        // Valida se a posição desejada para o empurrão é um ponto válido na malha de navegação (NavMesh)
+        if (NavMesh.SamplePosition(desiredPosition, out NavMeshHit hit, 5f, agent.areaMask))
         {
             NavMeshPath path = new NavMeshPath();
 
@@ -301,12 +290,8 @@ public class EnemyNavMesh : MonoBehaviour
 
                 float timeout = 2f;
 
-                while (timeout > 0f &&
-                       agent != null &&
-                       agent.enabled &&
-                       agent.isOnNavMesh &&
-                       (agent.pathPending ||
-                        agent.remainingDistance > agent.stoppingDistance + 0.2f))
+                // Aguarda o inimigo ser deslocado até o ponto de parada do empurrão
+                while (timeout > 0f && agent != null && agent.enabled && agent.isOnNavMesh && (agent.pathPending || agent.remainingDistance > agent.stoppingDistance + 0.2f))
                 {
                     timeout -= Time.deltaTime;
                     yield return null;

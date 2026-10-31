@@ -19,6 +19,7 @@ public class PlayerMove : MonoBehaviour
             return;
         }
 
+        // Alinha a orientação do jogador com a direção Y da Câmera
         transform.rotation = Quaternion.Euler(
             0,
             Camera.main.transform.eulerAngles.y,
@@ -27,6 +28,7 @@ public class PlayerMove : MonoBehaviour
 
         direction = Vector3.zero;
 
+        // Processa as teclas de movimentação de acordo com o vetor de visão do personagem
         if (Keyboard.current[Key.W].isPressed)
             direction += transform.forward;
 
@@ -39,6 +41,7 @@ public class PlayerMove : MonoBehaviour
         if (Keyboard.current[Key.A].isPressed)
             direction -= transform.right;
 
+        // Normaliza a magnitude para evitar que andar na diagonal seja mais rápido
         direction = Vector3.ClampMagnitude(direction, 1f);
     }
     void FixedUpdate()
@@ -55,7 +58,8 @@ public class PlayerMove : MonoBehaviour
 
             return;
         }
-        
+
+        // Gerencia a movimentação com física (Rigidbody) durante o efeito de Dash
         if (isDashing)
         {
             if (Time.time < dashEndTime)
@@ -72,6 +76,7 @@ public class PlayerMove : MonoBehaviour
             isDashing = false;
         }
 
+        // Aplicação normal de velocidade no Rigidbody
         rb.linearVelocity = new Vector3(
             direction.x * speed,
             rb.linearVelocity.y,
